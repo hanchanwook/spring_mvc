@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="bbs">
+
+	<select id="list" resultType="com.ict.edu05.vo.BbsVO">
+	<!-- 게시판은 최신 순으로 올라와애 되어서 내림차순으로 정렬한다 -->
+		select * from bbs_t order by b_idx desc		
+	</select>
+
+	<insert id="insert" parameterType="com.ict.edu05.vo.BbsVO">
+		insert into bbs_t(subject,writer,content,f_name,pwd, hit)
+		values(#{subject},#{writer},#{content},#{f_name},#{pwd}, 0)
+	</insert>
+
+	<update id="hitup" parameterType="com.ict.edu05.vo.BbsVO">
+		update bbs_t set hit = hit + 1 where b_idx = #{b_idx}
+	</update>
+
+	<select id="detail" parameterType="com.ict.edu05.vo.BbsVO" 
+		resultType="com.ict.edu05.vo.BbsVO">
+		select * from bbs_t where b_idx = #{b_idx}
+	</select>
+	
+	<!-- 삭제지만 실제로 삭제하지 않고 active = 0을 1로 변경하자 -->
+	<update id="delete" parameterType="com.ict.edu05.vo.BbsVO">
+		update bbs_t set active = 1 where b_idx = #{b_idx}
+	</update>
+	
+	<update id="update" parameterType="com.ict.edu05.vo.BbsVO">
+		update bbs_t
+		set subject=#{subject}, writer=#{writer}, content=#{content}, f_name = #{f_name}
+		where b_idx = #{b_idx}
+	</update>
+	<select id="commList" parameterType="String" resultType="com.ict.edu05.vo.CommVO">
+		select * from comment_t where b_idx = #{b_idx}
+	</select>
+	<insert id="commInsert" parameterType="com.ict.edu05.vo.CommVO">
+		insert into comment_t(writer, content, b_idx)
+		values(#{writer}, #{content}, #{b_idx})
+	</insert>
+	<delete id="commDelete" parameterType="com.ict.edu05.vo.BbsVO">
+		delete from comment_t where c_idx = #{c_idx}
+	</delete>
+	
+	<!-- 페이징 기법 -->
+	<select id="totalCount" resultType="int">
+		select count(*) from bbs_t
+	</select>
+	<select id="listPage" parameterType="map" resultType="com.ict.edu05.vo.BbsVO">
+		select * from bbs_t order by b_idx desc limit #{limit} offset #{offset}
+	</select>
+	
+	
+	
+</mapper>
+
+
+
+
+
+
